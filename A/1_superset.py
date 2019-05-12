@@ -21,10 +21,11 @@ def JudgeSuperset(A, B):
             return False
     return True
 
+if __name__ == '__main__':
+    print(JudgeSuperset("abccd", "abcc"))  # True
+    print(JudgeSuperset("abccd", "abbcc"))  # False
+    print(JudgeSuperset("abccd", "adcc"))  # True
+    print(JudgeSuperset("abcc", "abccd"))  # False
 
-print(JudgeSuperset("abccd", "abcc"))  # True
-print(JudgeSuperset("abccd", "abbcc"))  # False
-print(JudgeSuperset("abccd", "adcc"))  # True
-print(JudgeSuperset("abcc", "abccd"))  # False
 # 时间复杂度：O(n)
 # 空间复杂度：O(m+n)

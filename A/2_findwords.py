@@ -104,14 +104,17 @@ class Solution(object):
                 self.findWord(i - 1, j + 1, trie, board, tmp, str + board[i - 1][j + 1], ans)
         tmp[i][j] = 0
 
+if __name__ == '__main__':
+    targets = ["ARE", "PENPIEAPPLE", "APPLEPEN", "APPLE",
+               "LIPS", "RED", "AIR", "PLEASE"]
 
-targets = ["ARE", "PENPIEAPPLE", "APPLEPEN", "APPLE",
-           "LIPS", "RED", "AIR", "PLEASE"]
+    letters = [['A', 'R', 'E'],
+               ['I', 'P', 'D'],
+               ['E', 'L', 'P']]
 
-letters = [['A', 'R', 'E'],
-           ['I', 'P', 'D'],
-           ['E', 'L', 'P']]
+    print(Solution().findWords(board=letters, words=targets))
+    # ['AIR', 'APPLE', 'ARE', 'RED']
 
-print(Solution().findWords(board=letters, words=targets))
+
 # 时间复杂度：O(m*n)
 # 空间复杂度：O(m*n)

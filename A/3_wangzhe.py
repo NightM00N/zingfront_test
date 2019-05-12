@@ -1,12 +1,15 @@
 # -*- coding:utf-8 -*-
-
 '''
 @author: zjm
 @file: 3_wangzhe.py
 @time: 2019/5/12 0:59
 @desc: 智慧农药，二叉树树形递归
 '''
+
+import json
+from pprint import pprint
 from copy import deepcopy
+
 # 地图
 letters = [
     [133, -523, -558, 846, -907, -1224, -1346, 787, -411, -1826],
@@ -20,7 +23,6 @@ letters = [
     [133, -1654, -931, -1100, -433, -1643, -1281, -455, 904, -126],
     [-1494, -632, 243, 90, 993, 322, 32, -388, -225, 952],
 ]
-
 # 英雄
 people = {
     'mq': [10000, 100],
@@ -30,41 +32,96 @@ people = {
     'drj': [100, 2000],
 }
 
-result = []
+# 获取地图深度
+x_len = len(letters[0])
+y_len = len(letters)
+print(f'x_len {x_len} y_len {y_len}')
 
-def targets(people, letters, result, result_dict={}):
-    if not result_dict:# 初始化
-        result_dict["people"] = people
+
+def targets(_people, result_dict=None):
+    if result_dict is None:
+        result_dict = {}
+
+    if len(result_dict) == 0:  # 初始化
+        result_dict["people"] = _people
         result_dict["x"] = 0
         result_dict["y"] = 0
         result_dict["xy"] = []
+
     # 计算该步各英雄血量
-    people = {}
+    # print(f' Y {result_dict["y"]} X {result_dict["x"]}')
+    _people = {}
     for i in result_dict["people"].keys():
-        result_dict["people"][i][0] += letters[result_dict["x"]][result_dict["y"]]
+        result_dict["people"][i][0] += letters[result_dict["y"]][result_dict["x"]]
         if result_dict["people"][i][0] > 0:
-            people[i] = result_dict["people"][i]
-    result_dict["people"] = people
+            _people[i] = result_dict["people"][i]
+
+    # print('\t', f'{letters[result_dict["y"]][result_dict["x"]]}', 'PEOPLE: ', _people)
+    result_dict["people"] = _people
     # 记录路径坐标
-    result_dict["xy"].append(str(result_dict["x"])+","+str(result_dict["y"]))
+    result_dict["xy"].append(str(result_dict["x"]) + "," + str(result_dict["y"]))
     # 英雄全部阵亡，回溯
-    if len(people) == 0:
-        return
-    # 获取地图深度
-    x_len = len(letters[0])
-    y_len = len(letters)
+    if len(_people) == 0:
+        # print(f'DEAD X {result_dict["x"]} Y {result_dict["y"]}')
+        return []
     # 终点
     if result_dict["x"] + 1 >= x_len and result_dict["y"] + 1 >= y_len:
-        result.append(result_dict)
+        # _result.append(result_dict)
+        return [result_dict]
+
+    x_arr = deepcopy(result_dict)
+    y_arr = deepcopy(result_dict)
+    end1 = end2 = []
+    if x_arr["x"] + 1 < x_len:
+        # print('# TO RIGHT')
+        x_arr["x"] += 1
+        end1 = targets(_people, x_arr)
+        # result_dict["x"] -= 1
+    if y_arr["y"] + 1 < y_len:
+        # print('# TO DOWN')
+        y_arr["y"] += 1
+        end2 = targets(_people, y_arr)
+        # result_dict["y"] -= 1
+    end = [*end1, *end2]
+    # print('\t\t', end)
+    return end
 
 
-    if result_dict["x"]+1 < x_len:# 下
-        result_dict["x"] += 1
-        targets(people, letters, result, result_dict)
-    if result_dict["y"]+1 < y_len:# 右
-        result_dict["y"] += 1
-        targets(people, letters, result, result_dict)
+def good(arr):
+    max_mq=max_cyj=max_ys=max_k=max_drj = 0
+    route_mq =route_cyj =route_ys =route_k =route_drj = []
+    for item in arr:
+        # print(item)
+        if "mq" in item['people'] and item['people']['mq'][0] > max_mq:
+            max_mq = item['people']['mq'][0]
+            route_mq = item
+        if "cyj" in item['people'] and item['people']['cyj'][0] > max_cyj:
+            max_cyj = item['people']['cyj'][0]
+            route_cyj = item
+        if "ys" in item['people'] and item['people']['ys'][0] > max_ys:
+            max_ys = item['people']['ys'][0]
+            route_ys = item
+        if "k" in item['people'] and item['people']['k'][0] > max_k:
+            max_k = item['people']['k'][0]
+            route_k = item
+        if "drj" in item['people'] and item['people']['drj'][0] > max_drj:
+            max_drj = item['people']['drj'][0]
+            route_drj = item
+    # 打印各个英雄的最佳路线，即存活，且血量最高
+    print(route_mq)
+    print(route_cyj)
+    print(route_ys)
+    print(route_k)
+    print(route_drj)
+    # return json.dumps(route_mq)
 
 
-targets(people, letters, result)
-print(result)
+if __name__ == '__main__':
+    tmp_arr = targets(people)
+    print(tmp_arr, len(tmp_arr))
+    # pprint(tmp_arr)
+    good(tmp_arr)
+    # print(good(tmp_arr))
+
+# 时间复杂度： O(n^2)
+# 空间复杂度：O(n^2)
